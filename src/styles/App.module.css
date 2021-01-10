@@ -1,0 +1,14 @@
+.containerFluid {
+  display: grid;
+  grid-template-columns: 3fr 9fr;
+  height: 100vh;
+}
+
+.tickersContainer,
+.graphContainer {
+  height: calc(100%);
+}
+
+.tickersContainer {
+  border-right: 1px solid #eee;
+}
