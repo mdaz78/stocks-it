@@ -3,12 +3,14 @@ import moment from 'moment';
 
 import TickersContainer from './TickersContainer';
 import GraphContainer from './GraphContainer';
+import Loader from './Loader';
 
 import style from '../styles/App.module.css';
 import { StateContext } from '../contexts/StateContext';
 
 export default function App() {
   const [websocketResponse, setWebsocketResponse] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [state, setState] = useState({
     tickers: {},
     selectedTicker: '',
@@ -20,6 +22,7 @@ export default function App() {
   useEffect(() => {
     webSocket.current = new WebSocket('ws://stocks.mnet.website');
     webSocket.current.onmessage = (message) => {
+      setLoading(false);
       setWebsocketResponse(JSON.parse(message.data));
     };
 
@@ -73,6 +76,10 @@ export default function App() {
     return {};
   };
   const updatedData = getUpdatedData();
+
+  if (loading) {
+    return <Loader />;
+  }
 
   return (
     <StateContext.Provider value={{ state, updateSelectedTicker }}>
