@@ -36,7 +36,7 @@ export default function Card({ value, name, priceTrend }) {
 }
 
 Card.propTypes = {
-  value: PropTypes.string.isRequired,
+  value: PropTypes.number.isRequired,
   name: PropTypes.string.isRequired,
   priceTrend: PropTypes.string.isRequired,
 };

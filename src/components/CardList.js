@@ -8,7 +8,14 @@ export default function CardList() {
 
   const cards = Object.keys(tickerData).map((tickerName) => {
     const { value, priceTrend } = tickerData[tickerName];
-    return <Card value={value} name={tickerName} priceTrend={priceTrend} />;
+    return (
+      <Card
+        value={value}
+        name={tickerName}
+        priceTrend={priceTrend}
+        key={tickerName}
+      />
+    );
   });
 
   return <div>{cards}</div>;
