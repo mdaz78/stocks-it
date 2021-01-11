@@ -1,0 +1,71 @@
+.cardContainer {
+  border: 1px solid #000;
+  padding: 0.8rem;
+  margin: 1rem;
+  border-radius: 5px;
+  background-color: #fff;
+  display: grid;
+  grid-template-columns: 6fr 6fr;
+}
+
+.cardContainer:hover {
+  cursor: pointer;
+  box-shadow: 0 0 3px #000;
+}
+
+.tickerSide {
+  display: grid;
+  grid-template-rows: 2fr 1fr;
+  grid-gap: 3px;
+}
+
+.tickerSide h3 {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.tickerSide p {
+  font-size: 0.85rem;
+  color: #000;
+  opacity: 0.5;
+}
+
+.valueSide {
+  align-self: center;
+}
+
+.greenBox {
+  border: 1px solid #eee;
+  display: flex;
+  justify-content: space-around;
+  background-color: #008000;
+  color: #fff;
+  padding: 5px;
+  border-radius: 5px;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.redBox {
+  border: 1px solid #eee;
+  display: flex;
+  justify-content: space-around;
+  background-color: #ff0000;
+  color: #fff;
+  padding: 5px;
+  border-radius: 5px;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.greyBox {
+  border: 1px solid #eee;
+  display: flex;
+  justify-content: space-around;
+  background-color: #eeeeee;
+  color: #000;
+  padding: 5px;
+  border-radius: 5px;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
