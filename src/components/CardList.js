@@ -4,10 +4,10 @@ import Card from './Card';
 import { StateContext } from '../contexts/StateContext';
 
 export default function CardList() {
-  const tickerData = useContext(StateContext);
+  const { tickersData } = useContext(StateContext);
 
-  const cards = Object.keys(tickerData).map((tickerName) => {
-    const { value, priceTrend } = tickerData[tickerName];
+  const cards = Object.keys(tickersData).map((tickerName) => {
+    const { value, priceTrend } = tickersData[tickerName];
     return (
       <Card
         value={value}

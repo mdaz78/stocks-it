@@ -53,7 +53,7 @@ export default function App() {
   }, [webSocketResponse]);
 
   return (
-    <StateContext.Provider value={tickersData}>
+    <StateContext.Provider value={{ tickersData }}>
       <div className={style.containerFluid}>
         <div className={style.tickersContainer}>
           <TickersContainer />
