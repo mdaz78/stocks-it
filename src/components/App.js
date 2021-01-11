@@ -31,7 +31,7 @@ export default function App() {
         const prevValue = copyOfTickersData[name].value;
 
         copyOfTickersData[name] = {
-          value: price,
+          value: Number(price),
           priceTrend: prevValue < price ? 'INCREASING' : 'DECREASING',
           receivedAt,
           history: [...history, [receivedAt, price]],
@@ -41,7 +41,7 @@ export default function App() {
 
         copyOfTickersData[name] = {
           tickerName: name,
-          value: price,
+          value: Number(price),
           priceTrend: 'STABLE',
           receivedAt,
           history: [[receivedAt, price]],
