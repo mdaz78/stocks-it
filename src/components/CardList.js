@@ -1,10 +1,15 @@
-import React from 'react';
+import React, { useContext } from 'react';
 
 import Card from './Card';
+import { StateContext } from '../contexts/StateContext';
 
 export default function CardList() {
-  const arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+  const tickerData = useContext(StateContext);
 
-  const cards = arr.map(() => <Card />);
+  const cards = Object.keys(tickerData).map((tickerName) => {
+    const { value, priceTrend } = tickerData[tickerName];
+    return <Card value={value} name={tickerName} priceTrend={priceTrend} />;
+  });
+
   return <div>{cards}</div>;
 }
