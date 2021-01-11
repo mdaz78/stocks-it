@@ -28,11 +28,11 @@ export default function App() {
       if (name in copyOfTickersData) {
         const history = [...copyOfTickersData[name].history];
         const receivedAt = Date.now();
+        const prevValue = copyOfTickersData[name].value;
 
         copyOfTickersData[name] = {
-          priceTrend:
-            copyOfTickersData[name].value < price ? 'INCREASING' : 'DECREASING',
           value: price,
+          priceTrend: prevValue < price ? 'INCREASING' : 'DECREASING',
           receivedAt,
           history: [...history, [receivedAt, price]],
         };
