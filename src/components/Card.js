@@ -1,9 +1,10 @@
 import React from 'react';
+import moment from 'moment';
 import PropTypes from 'prop-types';
 
 import style from '../styles/Card.module.css';
 
-export default function Card({ value, name, priceTrend }) {
+export default function Card({ name, ticker }) {
   function getBoxClassName(trend) {
     switch (trend) {
       case 'INCREASING':
@@ -17,18 +18,60 @@ export default function Card({ value, name, priceTrend }) {
     }
   }
 
-  const [icon, boxColor] = getBoxClassName(priceTrend);
+  function getTrend(prices) {
+    if (prices.length <= 1) {
+      return 'STABLE';
+    }
+
+    const closingPrice = prices[prices.length - 1];
+    const openingPrice = prices[prices.length - 2];
+
+    if (closingPrice > openingPrice) {
+      return 'INCREASING';
+    }
+
+    if (closingPrice < openingPrice) {
+      return 'DECREASING';
+    }
+    return 'STABLE';
+  }
+
+  function getTimeElapsed(times) {
+    if (times.length <= 1) {
+      return '0 seconds ago';
+    }
+
+    const lastTimeElapsed = moment(times[times.length - 1]);
+    const secondLastTimeElapsed = moment(times[times.length - 2]);
+
+    const seconds = lastTimeElapsed.diff(secondLastTimeElapsed, 'seconds');
+
+    return `${seconds} seconds ago`;
+  }
+
+  function getDerivedData() {
+    const { prices, times } = ticker;
+
+    const value = prices[prices.length - 1];
+    const trend = getTrend(prices);
+    const timeElapsed = getTimeElapsed(times);
+
+    return { value, trend, timeElapsed };
+  }
+
+  const { value, trend, timeElapsed } = getDerivedData();
+  const [icon, boxColor] = getBoxClassName(trend);
 
   return (
     <div className={style.cardContainer}>
       <div className={style.tickerSide}>
         <h3>{name.toUpperCase()}</h3>
-        <p>Opening Value</p>
+        <p>{timeElapsed}</p>
       </div>
       <div className={style.valueSide}>
         <div className={boxColor}>
           <i className={icon} />
-          <p>{`$ ${value.toFixed(2)}`}</p>
+          <p>{`$ ${value}`}</p>
         </div>
       </div>
     </div>
@@ -36,7 +79,7 @@ export default function Card({ value, name, priceTrend }) {
 }
 
 Card.propTypes = {
-  value: PropTypes.number.isRequired,
   name: PropTypes.string.isRequired,
-  priceTrend: PropTypes.string.isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
+  ticker: PropTypes.any.isRequired,
 };

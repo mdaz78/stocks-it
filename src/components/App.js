@@ -7,54 +7,37 @@ import style from '../styles/App.module.css';
 import { StateContext } from '../contexts/StateContext';
 
 export default function App() {
-  const [webSocketResponse, setWebSocketResponse] = useState([]);
   const [state, setState] = useState({
     tickers: {},
-    selectedTicker: {},
+    selectedTicker: '',
   });
 
   const webSocket = useRef(null);
 
   useEffect(() => {
+    const copyOfState = { ...state };
+    const { tickers } = { ...copyOfState };
+    let { selectedTicker } = { ...copyOfState };
+
     webSocket.current = new WebSocket('ws://stocks.mnet.website');
     webSocket.current.onmessage = (message) => {
-      setWebSocketResponse(JSON.parse(message.data));
+      const data = JSON.parse(message.data);
+      data.forEach(([name, price]) => {
+        if (tickers[name]) {
+          tickers[name].prices.push(Number(price.toFixed(2)));
+          tickers[name].times.push(new Date());
+        } else {
+          tickers[name] = {};
+          tickers[name].prices = [Number(price.toFixed(2))];
+          tickers[name].times = [new Date()];
+          selectedTicker = selectedTicker || name;
+        }
+      });
+      setState({ ...state, tickers, selectedTicker });
     };
 
     return () => webSocket.current.close();
   }, []);
-
-  useEffect(() => {
-    const copyOfState = { ...state };
-    const tickers = { ...copyOfState.tickers };
-
-    webSocketResponse.forEach(([name, price]) => {
-      if (name in tickers) {
-        const history = [...tickers[name].history];
-        const receivedAt = Date.now();
-        const prevValue = tickers[name].value;
-
-        tickers[name] = {
-          value: Number(price),
-          priceTrend: prevValue < price ? 'INCREASING' : 'DECREASING',
-          receivedAt,
-          history: [...history, [receivedAt, price]],
-        };
-      } else {
-        const receivedAt = Date.now();
-
-        tickers[name] = {
-          tickerName: name,
-          value: Number(price),
-          priceTrend: 'STABLE',
-          receivedAt,
-          history: [[receivedAt, price]],
-        };
-      }
-    });
-
-    setState({ ...state, tickers });
-  }, [webSocketResponse]);
 
   return (
     <StateContext.Provider value={{ state }}>
