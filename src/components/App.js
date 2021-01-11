@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
+import moment from 'moment';
 
 import TickersContainer from './TickersContainer';
 import GraphContainer from './GraphContainer';
@@ -7,46 +8,85 @@ import style from '../styles/App.module.css';
 import { StateContext } from '../contexts/StateContext';
 
 export default function App() {
+  const [websocketResponse, setWebsocketResponse] = useState([]);
   const [state, setState] = useState({
     tickers: {},
     selectedTicker: '',
+    graphData: {},
   });
 
   const webSocket = useRef(null);
 
   useEffect(() => {
-    const copyOfState = { ...state };
-    const { tickers } = { ...copyOfState };
-    let { selectedTicker } = { ...copyOfState };
-
     webSocket.current = new WebSocket('ws://stocks.mnet.website');
     webSocket.current.onmessage = (message) => {
-      const data = JSON.parse(message.data);
-      data.forEach(([name, price]) => {
-        if (tickers[name]) {
-          tickers[name].prices.push(Number(price.toFixed(2)));
-          tickers[name].times.push(new Date());
-        } else {
-          tickers[name] = {};
-          tickers[name].prices = [Number(price.toFixed(2))];
-          tickers[name].times = [new Date()];
-          selectedTicker = selectedTicker || name;
-        }
-      });
-      setState({ ...state, tickers, selectedTicker });
+      setWebsocketResponse(JSON.parse(message.data));
     };
 
     return () => webSocket.current.close();
   }, []);
 
+  useEffect(() => {
+    const copyOfState = { ...state };
+    const { tickers } = { ...copyOfState };
+
+    websocketResponse.forEach(([name, price]) => {
+      // update selectedTicker
+      if (!copyOfState.selectedTicker) {
+        copyOfState.selectedTicker = name;
+      }
+
+      // update tickers
+      if (tickers[name]) {
+        tickers[name].prices.push(Number(price.toFixed(2)));
+        tickers[name].times.push(moment().format('h:mm:ss a'));
+      } else {
+        tickers[name] = {};
+        tickers[name].prices = [Number(price.toFixed(2))];
+        tickers[name].times = [moment().format('h:mm:ss a')];
+      }
+    });
+
+    setState({ ...state, ...copyOfState });
+  }, [websocketResponse]);
+
+  const updateSelectedTicker = (tickerName) => {
+    setState({ ...state, selectedTicker: tickerName });
+  };
+
+  const getUpdatedData = () => {
+    const { tickers, selectedTicker } = state;
+    if (tickers[selectedTicker]) {
+      return {
+        labels: tickers[selectedTicker].times,
+        datasets: [
+          {
+            label: selectedTicker.toUpperCase(),
+            data: tickers[selectedTicker].prices,
+            fill: true,
+            backgroundColor: 'rgba(75,192,192,0.2)',
+            borderColor: 'rgba(75,192,192,0.2)',
+          },
+        ],
+      };
+    }
+    return {};
+  };
+  const updatedData = getUpdatedData();
+
   return (
-    <StateContext.Provider value={{ state }}>
+    <StateContext.Provider value={{ state, updateSelectedTicker }}>
       <div className={style.containerFluid}>
         <div className={style.tickersContainer}>
           <TickersContainer />
         </div>
         <div className={style.graphContainer}>
-          <GraphContainer />
+          <GraphContainer
+            tickers={state.tickers}
+            ticker={state.tickers[state.selectedTicker]}
+            data={updatedData}
+            name={state.selectedTicker}
+          />
         </div>
       </div>
     </StateContext.Provider>

@@ -4,7 +4,7 @@ import Card from './Card';
 import { StateContext } from '../contexts/StateContext';
 
 export default function CardList() {
-  const { state } = useContext(StateContext);
+  const { state, updateSelectedTicker } = useContext(StateContext);
   const { tickers } = { ...state };
   const tickersData = { ...tickers };
 
@@ -14,7 +14,14 @@ export default function CardList() {
 
   const cards = Object.keys(tickersData).map((tickerName) => {
     const ticker = tickersData[tickerName];
-    return <Card ticker={ticker} name={tickerName} key={tickerName} />;
+    return (
+      <Card
+        ticker={ticker}
+        name={tickerName}
+        key={tickerName}
+        onClick={() => updateSelectedTicker(tickerName)}
+      />
+    );
   });
 
   return <div>{cards}</div>;

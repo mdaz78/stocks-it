@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 
 import style from '../styles/Card.module.css';
 
-export default function Card({ name, ticker }) {
+export default function Card({ name, ticker, onClick }) {
   function getBoxClassName(trend) {
     switch (trend) {
       case 'INCREASING':
@@ -41,12 +41,15 @@ export default function Card({ name, ticker }) {
       return '0 seconds ago';
     }
 
-    const lastTimeElapsed = moment(times[times.length - 1]);
-    const secondLastTimeElapsed = moment(times[times.length - 2]);
+    const lastTimeElapsed = moment(times[times.length - 1], 'HH:mm:ss a');
+    const secondLastTimeElapsed = moment(times[times.length - 2], 'HH:mm:ss a');
 
-    const seconds = lastTimeElapsed.diff(secondLastTimeElapsed, 'seconds');
+    // const seconds = lastTimeElapsed.diff(secondLastTimeElapsed, 'seconds');
+    const duration = moment.duration(
+      lastTimeElapsed.diff(secondLastTimeElapsed)
+    );
 
-    return `${seconds} seconds ago`;
+    return `${duration.asSeconds()} seconds ago`;
   }
 
   function getDerivedData() {
@@ -63,7 +66,8 @@ export default function Card({ name, ticker }) {
   const [icon, boxColor] = getBoxClassName(trend);
 
   return (
-    <div className={style.cardContainer}>
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions
+    <div className={style.cardContainer} onClick={() => onClick()}>
       <div className={style.tickerSide}>
         <h3>{name.toUpperCase()}</h3>
         <p>{timeElapsed}</p>
@@ -82,4 +86,5 @@ Card.propTypes = {
   name: PropTypes.string.isRequired,
   // eslint-disable-next-line react/forbid-prop-types
   ticker: PropTypes.any.isRequired,
+  onClick: PropTypes.func.isRequired,
 };
