@@ -89,10 +89,8 @@ export default function App() {
         </div>
         <div className={style.graphContainer}>
           <GraphContainer
-            tickers={state.tickers}
             ticker={state.tickers[state.selectedTicker]}
             data={updatedData}
-            name={state.selectedTicker}
           />
         </div>
       </div>
