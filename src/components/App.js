@@ -8,7 +8,10 @@ import { StateContext } from '../contexts/StateContext';
 
 export default function App() {
   const [webSocketResponse, setWebSocketResponse] = useState([]);
-  const [tickersData, setTickersData] = useState({});
+  const [state, setState] = useState({
+    tickers: {},
+    selectedTicker: {},
+  });
 
   const webSocket = useRef(null);
 
@@ -22,15 +25,16 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const copyOfTickersData = { ...tickersData };
+    const copyOfState = { ...state };
+    const tickers = { ...copyOfState.tickers };
 
     webSocketResponse.forEach(([name, price]) => {
-      if (name in copyOfTickersData) {
-        const history = [...copyOfTickersData[name].history];
+      if (name in tickers) {
+        const history = [...tickers[name].history];
         const receivedAt = Date.now();
-        const prevValue = copyOfTickersData[name].value;
+        const prevValue = tickers[name].value;
 
-        copyOfTickersData[name] = {
+        tickers[name] = {
           value: Number(price),
           priceTrend: prevValue < price ? 'INCREASING' : 'DECREASING',
           receivedAt,
@@ -39,7 +43,7 @@ export default function App() {
       } else {
         const receivedAt = Date.now();
 
-        copyOfTickersData[name] = {
+        tickers[name] = {
           tickerName: name,
           value: Number(price),
           priceTrend: 'STABLE',
@@ -49,11 +53,11 @@ export default function App() {
       }
     });
 
-    setTickersData(copyOfTickersData);
+    setState({ ...state, tickers });
   }, [webSocketResponse]);
 
   return (
-    <StateContext.Provider value={{ tickersData }}>
+    <StateContext.Provider value={{ state }}>
       <div className={style.containerFluid}>
         <div className={style.tickersContainer}>
           <TickersContainer />

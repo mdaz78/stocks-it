@@ -4,7 +4,9 @@ import Card from './Card';
 import { StateContext } from '../contexts/StateContext';
 
 export default function CardList() {
-  const { tickersData } = useContext(StateContext);
+  const { state } = useContext(StateContext);
+  const { tickers } = state;
+  const tickersData = { ...tickers };
 
   const cards = Object.keys(tickersData).map((tickerName) => {
     const { value, priceTrend } = tickersData[tickerName];
